@@ -2,8 +2,8 @@ tape_path = 'tape.in'
 fsm_path = 'fsm.in'    
 
 def main():
-    tape = '0010110100010010010101'
-    convert_tape_to_hex(tape)
+    tape = 'bb00100101100100'
+    get_tape_instructions(tape)
     return
 
 
@@ -19,10 +19,20 @@ def get_tape_instructions(raw_tape: str) -> str:
     """
     instructions = ''
     instructions += 'set_tape:\n'
-    instructions += '\tmov r0, #0xf004 @ endereço de tape_addr do header\n'
+    instructions += '\tmov r0, #0xf004   @ endereço de tape_addr do header\n'
     instructions += '\tldr r0, [r0]      @ carrega tape_addr em r0\n'    
-    
+    hex_tape = convert_tape_to_hex(raw_tape)
+    for i in range(len(hex_tape)//8):
+        byte = hex_tape[8*i:8*i + 8]
+        low_byte, high_byte = byte[4:8], byte[0:4]
+        instructions += f'\tmov r1, #0x{high_byte}   @ high byte (i = {i})\n'
+        instructions += f'\tmov r2, #0x{low_byte}   @ low byte (i = {i})\n'
+        instructions += f'\tlsl r1, r1, #16   @ shift do high byte para a parte alta de r1\n'
+        instructions += f'\torr r1, r1, r2    @ concatenação high byte + low byte em r1\n'
+        instructions += f'\tstr r1, [r0]      @ store do byte (i = {i})\n'
+        instructions += '\tadd r0, r0, #4    @ próxima posição de escrita\n'
     return instructions
+
 
 def convert_tape_to_hex(raw_tape: str) -> str:
     symbol_bits_map = {
