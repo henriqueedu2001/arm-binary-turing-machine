@@ -176,7 +176,7 @@ set_fsm:
 	@ q1 transita para qhalt se x = 1 e para q0 de x=0
 	@ o cabeçote sempre inverte o bit lido
 	@ FSM: 0700010700ff representada na memória como 070100070000ff00
-	@ FSM: 0b00010b00ff representada na memória como 0b01 000b 0000 ff00
+	@ FSM: 0b00 010b 00ff representada na memória como 0b01 000b 0000 ff00
 	mov r0, #0xf000          @ ponteiro fsm_addr para o endereço base da FSM
 	ldr r0, [r0]             @ r0 = fsm_addr = endereço base da FSM
 	@ escrita da primeira parte da FSM
